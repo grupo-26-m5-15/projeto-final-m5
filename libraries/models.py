@@ -9,17 +9,17 @@ class Library(models.Model):
 
 
 class LibraryEmployee(models.Model):
-    library = models.ForeignKey(Library, related_name="libraries")
-    employee = models.ForeignKey("users.User", related_name="libraries")
+    library = models.ForeignKey(Library, on_delete=models.CASCADE, related_name="libraries")
+    employee = models.ForeignKey("users.User", on_delete=models.CASCADE, related_name="libraries")
     is_employee = models.BooleanField(default=True, null=False)
 
 
 class LibraryBooks(models.Model):
-    library = models.ForeignKey(Library, related_name="books")
-    book = models.ForeignKey("books.Book", related_name="libraries")
+    library = models.ForeignKey(Library, on_delete=models.CASCADE, related_name="books")
+    book = models.ForeignKey("books.Book", on_delete=models.CASCADE, related_name="libraries")
 
 
 class UserLibraryBlock(models.Model):
-    library = models.ForeignKey(Library, related_name="users")
-    user = models.ForeignKey("users.User", related_name="libraries")
+    library = models.ForeignKey(Library, on_delete=models.CASCADE, related_name="users")
+    user = models.ForeignKey("users.User", on_delete=models.CASCADE, related_name="libraries")
     is_blocked = models.BooleanField(default=False)

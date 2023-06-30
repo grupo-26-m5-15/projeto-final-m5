@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import views
+from . import views
 from rest_framework_simplejwt import views as jwt_views
 
 urlpatterns = [
