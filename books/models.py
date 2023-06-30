@@ -7,6 +7,7 @@ class Book(models.Model):
     author = models.CharField(max_length=150)
     release_date = models.DateField()
     publishing_company = models.CharField(11)
+    is_admin = models.BooleanField(default=False, null=True)
     user = models.ManyToManyField(
         "users.User", through="Following", related_name="books"
     )
