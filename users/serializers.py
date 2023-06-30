@@ -15,7 +15,6 @@ class UserSerializer(serializers.ModelSerializer):
             "cpf",
             "username",
             "password",
-            "is_admin",
             "is_superuser",
         ]
         extra_kwargs = {
