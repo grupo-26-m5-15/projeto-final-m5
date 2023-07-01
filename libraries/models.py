@@ -28,6 +28,6 @@ class LibraryBooks(models.Model):
 class UserLibraryBlock(models.Model):
     library = models.ForeignKey(Library, on_delete=models.CASCADE, related_name="users")
     user = models.ForeignKey(
-        "users.User", on_delete=models.CASCADE, related_name="libraries"
+        "users.User", on_delete=models.CASCADE, related_name="libraries_blocked"
     )
     is_blocked = models.BooleanField(default=False)
