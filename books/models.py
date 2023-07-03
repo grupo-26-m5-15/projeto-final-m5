@@ -5,9 +5,12 @@ class Book(models.Model):
     title = models.CharField(max_length=200, unique=True)
     type = models.CharField(max_length=50)
     author = models.CharField(max_length=150)
+    synopsis = models.CharField(max_length=255)
     release_date = models.DateField()
-    publishing_company = models.CharField(11)
+    publishing_company = models.CharField(max_length=11)
     is_admin = models.BooleanField(default=False, null=True)
+    add_at = models.DateTimeField(auto_now_add=True)
+    quantity = models.IntegerField(default=0)
     user = models.ManyToManyField(
         "users.User", through="Following", related_name="books"
     )
