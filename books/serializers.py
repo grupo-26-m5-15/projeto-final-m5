@@ -7,7 +7,17 @@ from users.serializers import UserSerializer
 class BookSerializer(serializers.ModelSerializer):
     class Meta:
         model = Book
-        fields = ["id", "title", "type", "author", "release_date", "publishing_company"]
+        fields = [
+            "id",
+            "title",
+            "type",
+            "author",
+            "synopsis",
+            "release_date",
+            "publishing_company",
+            "add_at",
+            "quantity",
+        ]
 
         extra_kwargs = {
             "title": {"validators": [UniqueValidator(queryset=Book.objects.all())]}
