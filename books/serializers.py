@@ -7,7 +7,15 @@ from users.serializers import UserSerializer
 class BookSerializer(serializers.ModelSerializer):
     class Meta:
         model = Book
-        fields = ["id", "title", "type", "author", "release_date", "publishing_company"]
+        fields = [
+            "id",
+            "title",
+            "type",
+            "author",
+            "release_date",
+            "publishing_company",
+            "synopsis",
+        ]
 
         extra_kwargs = {
             "title": {"validators": [UniqueValidator(queryset=Book.objects.all())]}
@@ -31,7 +39,7 @@ class FollowingSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Following
-        fields = ["id", "user", "book", "is_follow"]
+        fields = ["id", "user", "book", "quantity"]
 
     def create(self, validated_data: dict) -> Following:
         return Following.objects.create(**validated_data)

@@ -6,8 +6,9 @@ class Book(models.Model):
     type = models.CharField(max_length=50)
     author = models.CharField(max_length=150)
     release_date = models.DateField()
-    publishing_company = models.CharField(11)
-    is_admin = models.BooleanField(default=False, null=True)
+    publishing_company = models.CharField(max_length=11)
+    synopsis = models.TextField()
+    quantity = models.IntegerField()
     user = models.ManyToManyField(
         "users.User", through="Following", related_name="books"
     )
@@ -18,7 +19,6 @@ class Following(models.Model):
         "users.User", on_delete=models.CASCADE, related_name="following"
     )
     book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name="followers")
-    is_follow = models.BooleanField(default=True, null=True)
 
 
 class Rating(models.Model):
