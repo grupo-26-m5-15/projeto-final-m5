@@ -1,4 +1,6 @@
 from django.db import models
+from rest_framework.validators import UniqueValidator
+from books.models import Book
 
 
 class Copy(models.Model):
