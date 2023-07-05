@@ -12,16 +12,8 @@ class CopySerializer(serializers.ModelSerializer):
         model = Copy
         fields = ["id", "book", "is_available"]
 
-        extra_kwargs = {
-            "name": {
-                "validators": [UniqueValidator(queryset=YourModelName.objects.all())]
-            }
-        }
-
-        # validators = [
-        #     UniqueTogetherValidator(
-        #         queryset=Book.objects.all(),
-        #         message="Livro já cadastrado",
-        #         fields=["book_id"],
-        #     )
-        # ]
+        # extra_kwargs = {
+        #     "name": {
+        #         "validators": [UniqueValidator(queryset=YourModelName.objects.all())]
+        #     }
+        # }
