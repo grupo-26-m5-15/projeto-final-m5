@@ -10,13 +10,13 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
-import dj_database_url
-from django.core.management.utils import get_random_secret_key
-from pathlib import Path
-from datetime import timedelta
-
 import os
+from datetime import timedelta
+from pathlib import Path
+
+import dj_database_url
 import dotenv
+from django.core.management.utils import get_random_secret_key
 
 dotenv.load_dotenv()
 
@@ -100,7 +100,7 @@ DATABASES = {
     #     "HOST": os.getenv("POSTGRES_DB_HOST"),
     #     "PORT": os.getenv("POSTGRES_DB_PORT"),
     # }
-    "default": {
+    "test": {
         "ENGINE": "django.db.backends.postgresql",
         "USERNAME": os.getenv("POSTGRES_USERNAME"),
         "PASSWORD": os.getenv("POSTGRES_PASSWORD"),
@@ -108,7 +108,7 @@ DATABASES = {
         "HOST": os.getenv("POSTGRES_DB_HOST"),
         "PORT": os.getenv("POSTGRES_DB_PORT"),
     },
-    "test": {
+    "default": {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / "db.sqlite3",
     },
