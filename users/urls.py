@@ -5,7 +5,7 @@ from .views import (
     UserPostView,
     UserDetailsView,
     UserFollowingBooksListView,
-    UserFollowingBooksDetails,
+    UserFollowingBooksDetailsView,
     UserFollowingBooksCreateView,
 )
 
@@ -18,5 +18,7 @@ urlpatterns = [
     path("login/", jwt_views.TokenObtainPairView.as_view()),
     path("users/books/following/", UserFollowingBooksListView.as_view()),
     path("users/book/<int:pk>/follow/", UserFollowingBooksCreateView.as_view()),
-    path("users/book/<int:pk>/read_or_unfollow/", UserFollowingBooksDetails.as_view()),
+    path(
+        "users/book/<int:pk>/read_or_unfollow/", UserFollowingBooksDetailsView.as_view()
+    ),
 ]

@@ -13,8 +13,8 @@ from .serializers import UserSerializer
 from libraries.models import LibraryEmployee
 from .models import User
 from django.shortcuts import get_object_or_404
-from books.models import Following, Book
-from books.serializers import FollowingSerializer
+from books.models import Following, Book, Rating
+from books.serializers import FollowingSerializer, RatingSerializer
 
 
 class UserListView(generics.ListAPIView):
@@ -85,25 +85,24 @@ class UserFollowingBooksCreateView(generics.CreateAPIView):
     def perform_create(self, serializer):
         book_id_data = self.kwargs.get("pk")
 
-        if book_id_data:
-            book = get_object_or_404(Book, id=book_id_data)
+        book = get_object_or_404(Book, id=book_id_data)
 
-            try:
-                follow_already_exists = Following.objects.get(
-                    user=self.request.user, book=book
-                )
-            except Following.DoesNotExist:
-                follow_already_exists = None
+        try:
+            follow_already_exists = Following.objects.get(
+                user=self.request.user, book=book
+            )
+        except Following.DoesNotExist:
+            follow_already_exists = None
 
-            if follow_already_exists:
-                raise ValidationError(
-                    {"message": "The user is already following this book"}
-                )
+        if follow_already_exists:
+            raise ValidationError(
+                {"message": "The user is already following this book"}
+            )
 
-            serializer.save(user=self.request.user, book=book)
+        serializer.save(user=self.request.user, book=book)
 
 
-class UserFollowingBooksDetails(generics.RetrieveDestroyAPIView):
+class UserFollowingBooksDetailsView(generics.RetrieveDestroyAPIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated, IsAccountOwnerFollow]
     queryset = Following.objects.all()
@@ -113,3 +112,32 @@ class UserFollowingBooksDetails(generics.RetrieveDestroyAPIView):
         instance = self.get_object()
         serializer = self.get_serializer(instance)
         return Response(serializer.data["book"])
+
+
+class UserRatingBookCreateView(generics.CreateAPIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated, IsAccountOwnerFollow]
+    queryset = Rating.objects.all()
+    serializer_class = RatingSerializer
+
+    def perform_create(self, serializer):
+        rate = self.request.data.get("rating")
+
+        description = self.request.data.get("description")
+
+        book_id_data = self.kwargs.get("pk")
+
+        book = get_object_or_404(Book, id=book_id_data)
+
+        try:
+            ratings_already_exists = Rating.objects.get(
+                user=self.request.user, book=book
+            )
+
+        except Rating.DoesNotExist:
+            ratings_already_exists = None
+
+        if ratings_already_exists:
+            raise ValidationError({"message": "The user already rated"})
+
+        serializer.save(user=self.request.user, book=book)
