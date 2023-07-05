@@ -41,7 +41,7 @@ class FollowingSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Following
-        fields = ["id", "user", "book", "is_follow"]
+        fields = ["id", "user", "book"]
 
     def create(self, validated_data: dict) -> Following:
         return Following.objects.create(**validated_data)

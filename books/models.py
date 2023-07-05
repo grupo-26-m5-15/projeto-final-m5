@@ -20,7 +20,6 @@ class Following(models.Model):
         "users.User", on_delete=models.CASCADE, related_name="following"
     )
     book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name="followers")
-    is_follow = models.BooleanField(default=True, null=True)
 
 
 class Rating(models.Model):

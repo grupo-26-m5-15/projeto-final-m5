@@ -69,6 +69,10 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "biblioteka.urls"
 
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=2),
+}
+
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
@@ -92,14 +96,6 @@ WSGI_APPLICATION = "biblioteka.wsgi.application"
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-    # "default": {
-    #     "ENGINE": "django.db.backends.sqlite3",
-    #     "USERNAME": os.getenv("POSTGRES_USERNAME"),
-    #     "PASSWORD": os.getenv("POSTGRES_PASSWORD"),
-    #     "NAME": os.getenv("POSTGRES_DB_NAME"),
-    #     "HOST": os.getenv("POSTGRES_DB_HOST"),
-    #     "PORT": os.getenv("POSTGRES_DB_PORT"),
-    # }
     "default": {
         "ENGINE": "django.db.backends.postgresql",
         "USERNAME": os.getenv("POSTGRES_USERNAME"),
@@ -153,6 +149,8 @@ AUTH_PASSWORD_VALIDATORS = [
 LANGUAGE_CODE = "en-us"
 
 REST_FRAMEWORK = {
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 3,
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
 
