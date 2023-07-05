@@ -10,6 +10,7 @@ class Book(models.Model):
     publishing_company = models.CharField(max_length=11)
     add_at = models.DateTimeField(auto_now_add=True)
     quantity = models.IntegerField(default=0)
+    image = models.URLField(null=True)
     user = models.ManyToManyField(
         "users.User", through="Following", related_name="books"
     )
