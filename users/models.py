@@ -8,3 +8,5 @@ class User(AbstractUser):
     email = models.CharField(max_length=150, unique=True)
     birth_date = models.DateTimeField(null=True)
     cpf = models.CharField(max_length=11, unique=True)
+    image = models.URLField(null=True)
+    is_superuser = models.BooleanField(default=False, null=True)
