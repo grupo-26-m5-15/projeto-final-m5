@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
+from rest_framework.fields import ReadOnlyField
 from .models import User
 
 
@@ -18,13 +19,23 @@ class UserSerializer(serializers.ModelSerializer):
             "username",
             "password",
             "is_superuser",
-            "is_admin",
+            "image",
+            "library_id",
         ]
+
         extra_kwargs = {
             "password": {"write_only": True},
             "email": {"validators": [UniqueValidator(queryset=User.objects.all())]},
-            "is_superuser": {"read_only": True},
         }
+
+    def get_fields(self):
+        fields = super().get_fields()
+        request = self.context.get("request")
+
+        if request and request.method != "POST":
+            fields["is_superuser"] = ReadOnlyField()
+
+        return fields
 
     def get_library_id(self, obj):
         request = self.context.get("request")
@@ -37,7 +48,8 @@ class UserSerializer(serializers.ModelSerializer):
         return None
 
     def create(self, validated_data: dict) -> User:
-        if validated_data["is_admin"]:
+        superuser = validated_data.get("is_superuser")
+        if superuser:
             return User.objects.create_superuser(**validated_data)
 
         return User.objects.create_user(**validated_data)

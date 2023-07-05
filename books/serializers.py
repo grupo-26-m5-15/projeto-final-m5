@@ -12,9 +12,11 @@ class BookSerializer(serializers.ModelSerializer):
             "title",
             "type",
             "author",
+            "synopsis",
             "release_date",
             "publishing_company",
-            "synopsis",
+            "add_at",
+            "quantity",
         ]
 
         extra_kwargs = {
@@ -39,7 +41,7 @@ class FollowingSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Following
-        fields = ["id", "user", "book", "quantity"]
+        fields = ["id", "user", "book"]
 
     def create(self, validated_data: dict) -> Following:
         return Following.objects.create(**validated_data)
