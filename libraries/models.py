@@ -19,7 +19,7 @@ class LibraryEmployee(models.Model):
     employee = models.ForeignKey(
         "users.User", on_delete=models.CASCADE
     )
-    is_employee = models.BooleanField(default=True, null=False)
+    is_employee = models.BooleanField(default=True, null=True)
 
 
 class LibraryBooks(models.Model):
@@ -34,4 +34,4 @@ class UserLibraryBlock(models.Model):
     user = models.ForeignKey(
         "users.User", on_delete=models.CASCADE, related_name="libraries_blocked"
     )
-    is_blocked = models.BooleanField(default=False)
+    is_blocked = models.BooleanField(default=True, null=True)

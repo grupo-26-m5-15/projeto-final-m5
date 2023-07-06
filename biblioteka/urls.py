@@ -21,6 +21,6 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/", include("users.urls")),
     path("api/", include("libraries.urls")),
-    # path("api/", include("books.urls")),
-    # path("api/", include("loans.urls")),
+    path("api/", include("books.urls")),
+    path("api/", include("loans.urls")),
 ]

@@ -42,9 +42,11 @@ class LibraryEmployeeSerializer(serializers.ModelSerializer):
         fields = ["id", "library", "employee", "is_employee"]
 
     def create(self, validated_data):
-        return Library.objects.create(**validated_data)
+        return LibraryEmployee.objects.create(**validated_data)
 
-    def update(self, instance: Library, validated_data: dict) -> Library:
+    def update(
+        self, instance: LibraryEmployee, validated_data: dict
+    ) -> LibraryEmployee:
         for key, value in validated_data.items():
             setattr(instance, key, value)
 
