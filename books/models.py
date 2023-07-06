@@ -11,6 +11,7 @@ class Book(models.Model):
     add_at = models.DateTimeField(auto_now_add=True)
     quantity = models.IntegerField(default=0)
     image = models.URLField(null=True)
+
     user = models.ManyToManyField(
         "users.User", through="Following", related_name="books"
     )
@@ -24,9 +25,10 @@ class Following(models.Model):
 
 
 class Rating(models.Model):
+    rating = models.FloatField()
+    description = models.TextField(null=True)
+
     user = models.ForeignKey(
         "users.User", on_delete=models.CASCADE, related_name="book_ratings"
     )
     book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name="ratings")
-    rating = models.FloatField()
-    description = models.TextField(null=True)

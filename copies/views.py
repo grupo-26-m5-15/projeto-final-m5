@@ -17,9 +17,6 @@ class CopyView(ListCreateAPIView):
     def perform_create(self, serializer):
         book = get_object_or_404(Book, pk=self.kwargs.get("pk"))
 
-        # if book["quantity"] == 0:
-        #     return Request({message: {"Livro não disponível."}})
-
         serializer.save(book=book)
 
     def get_queryset(self):
