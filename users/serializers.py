@@ -2,9 +2,11 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from rest_framework.fields import ReadOnlyField
 from .models import User
+from libraries.models import Library
 
 
 class UserSerializer(serializers.ModelSerializer):
+
     library_id = serializers.SerializerMethodField()
 
     class Meta:
@@ -28,15 +30,6 @@ class UserSerializer(serializers.ModelSerializer):
             "email": {"validators": [UniqueValidator(queryset=User.objects.all())]},
         }
 
-    def get_fields(self):
-        fields = super().get_fields()
-        request = self.context.get("request")
-
-        if request and request.method != "POST":
-            fields["is_superuser"] = ReadOnlyField()
-
-        return fields
-
     def get_library_id(self, obj):
         request = self.context.get("request")
 
@@ -46,6 +39,15 @@ class UserSerializer(serializers.ModelSerializer):
             return library_id_value
 
         return None
+
+    def get_fields(self):
+        fields = super().get_fields()
+        request = self.context.get("request")
+
+        if request and request.method != "POST":
+            fields["is_superuser"] = ReadOnlyField()
+
+        return fields
 
     def create(self, validated_data: dict) -> User:
         superuser = validated_data.get("is_superuser")

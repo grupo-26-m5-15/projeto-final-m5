@@ -6,6 +6,10 @@ from books.serializers import BookSerializer
 
 
 class LibrarySerializer(serializers.ModelSerializer):
+
+    employees = UserSerializer(read_only=True, many=True)
+    books = BookSerializer(read_only=True, many=True)
+
     class Meta:
         model = Library
         fields = [
@@ -14,6 +18,7 @@ class LibrarySerializer(serializers.ModelSerializer):
             "cnpj",
             "email",
             "address",
+            "employees"
         ]
 
     def create(self, validated_data):
