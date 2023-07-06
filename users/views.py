@@ -10,6 +10,8 @@ from .permissions import (
 )
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from .serializers import UserSerializer
+from loans.models import Loan
+from loans.serializers import ListLoanUserSerializer
 from libraries.models import LibraryEmployee, Library, UserLibraryBlock
 from libraries.serializers import LibraryEmployeeSerializer, UserLibraryBlockSerializer
 from .models import User
@@ -265,3 +267,15 @@ class UnblockStudentView(generics.UpdateAPIView):
         return Response(
             {"message": "user unblocked with success"}, status=status.HTTP_200_OK
         )
+
+
+class ListLoanUserViews(generics):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated, IsAccountOwnerOrAdminOrEmployeeFollow]
+    queryset = Loan.objects.all()
+    serializer_class = ListLoanUserSerializer
+
+    def get_queryset(self):
+        user = get_object_or_404(User, pk=self.kwargs["pk"])
+        queryset = Loan.objects.filter(user=user)
+        return queryset
