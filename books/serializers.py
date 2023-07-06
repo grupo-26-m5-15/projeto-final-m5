@@ -55,12 +55,16 @@ class FollowingSerializer(serializers.ModelSerializer):
         return instance
 
 
+class FollowingSerializerGet(FollowingSerializer):
+    user = UserSerializer(write_only=True)
+
+
 class RatingSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
     book = BookSerializer(read_only=True)
 
     class Meta:
-        model = Following
+        model = Rating
         fields = ["id", "user", "book", "rating", "description"]
 
     def create(self, validated_data: dict) -> Rating:
@@ -73,3 +77,7 @@ class RatingSerializer(serializers.ModelSerializer):
         instance.save()
 
         return instance
+
+
+class RatingSerializerGet(RatingSerializer):
+    user = UserSerializer(write_only=True)
