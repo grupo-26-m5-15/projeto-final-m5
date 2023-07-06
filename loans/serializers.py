@@ -1,7 +1,9 @@
 from rest_framework import serializers
-from .models import Loan
-from users.serializers import UserSerializer
+
 from copies.serializers import CopySerializer
+from users.serializers import UserSerializer
+
+from .models import Loan
 
 
 class LoanSerializer(serializers.ModelSerializer):
@@ -10,7 +12,14 @@ class LoanSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Loan
-        fields = ["id", "start_date", "end_date", "devolution_date", "user", "copy"]
+        fields = [
+            "id",
+            "start_date",
+            "end_date",
+            "devolution_date",
+            "user",
+            "copy"
+             ]
 
     def create(self, validated_data: dict) -> Loan:
         return Loan.objects.create(**validated_data)
