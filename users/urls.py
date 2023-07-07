@@ -15,8 +15,8 @@ from .views import (
     RetrieveOrFireEmployeeView,
     ListAllUserLibraryBlocksView,
     UnblockStudentView,
-    ListLoanUserSerializer,
-    EmailTokenObtainPairSerializer,
+    ListLoanUserViews,
+    EmailTokenObtainPairView,
 )
 
 
@@ -26,7 +26,7 @@ urlpatterns = [
     path("users/create_admin", UserAdminView.as_view()),
     path("users/create/", UserPostView.as_view()),
     path("users/<int:pk>/", UserDetailsView.as_view()),
-    path("login/", EmailTokenObtainPairSerializer.as_view()),
+    path("login/", EmailTokenObtainPairView.as_view()),
     path("users/books/following/", UserFollowingBooksListView.as_view()),
     path("users/book/<int:pk>/follow/", UserFollowingBooksCreateView.as_view()),
     path(
@@ -46,5 +46,5 @@ urlpatterns = [
     ),
     path("users/<str:cpf>/library_blocks", ListAllUserLibraryBlocksView.as_view()),
     path("users/<str:cpf>/unblock", UnblockStudentView.as_view()),
-    path("users/<str:cpf>/loans", ListLoanUserSerializer.as_view()),
+    path("users/<str:cpf>/loans", ListLoanUserViews.as_view()),
 ]
