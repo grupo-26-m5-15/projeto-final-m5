@@ -4,12 +4,14 @@ from rest_framework import generics
 from .models import Loan
 from .serializers import LoanSerializer
 
-# from rest_framework.permissions import (IsAdminUser, IsAuthenticated,
-#                                         IsAuthenticatedOrReadOnly)
-# from rest_framework_simplejwt.authentication import JWTAuthentication
 
 
-class LoanListCreateView(generics.ListCreateAPIView):
+class LoanCreateView(generics.CreateAPIView):
+    queryset = Loan.objects.all()
+    serializer_class = LoanSerializer
+
+
+class LoanListView(generics.ListAPIView):
     queryset = Loan.objects.all()
     serializer_class = LoanSerializer
 
