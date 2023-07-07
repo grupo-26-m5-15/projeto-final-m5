@@ -1,4 +1,5 @@
 from rest_framework import generics
+from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.views import Response, status
 from rest_framework.exceptions import ValidationError
 from rest_framework_simplejwt.authentication import JWTAuthentication
@@ -9,7 +10,13 @@ from .permissions import (
     IsAccountOwnerFollow,
 )
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
-from .serializers import UserSerializer
+from .serializers import (
+    UserSerializer,
+    UserAdminSerializer,
+    EmailTokenObtainPairSerializer,
+)
+from loans.models import Loan
+from loans.serializers import ListLoanUserSerializer
 from libraries.models import LibraryEmployee, Library, UserLibraryBlock
 from libraries.serializers import LibraryEmployeeSerializer, UserLibraryBlockSerializer
 from .models import User
@@ -23,32 +30,64 @@ from books.serializers import (
 )
 
 
+class EmailTokenObtainPairView(TokenObtainPairView):
+    serializer_class = EmailTokenObtainPairSerializer
+
+
 class UserListView(generics.ListAPIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAdminOrEmployee]
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
+    def get_queryset(self):
+        first_name = self.request.query_params.get("first_name")
+        email = self.request.query_params.get("email")
+        username = self.request.query_params.get("username")
+        cpf = self.request.query_params.get("cpf")
+
+        queryset = super().get_queryset()
+
+        if first_name:
+            queryset = queryset.filter(first_name__istartswith=first_name)
+
+        if email:
+            queryset = queryset.filter(email__icontains=email)
+
+        if cpf:
+            queryset = queryset.filter(cpf__contains=cpf)
+
+        if username:
+            queryset = queryset.filter(username__icontains=username)
+
+        return queryset
+
 
 class UserPostView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
+
+class UserAdminView(generics.CreateAPIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAdminUser]
+    queryset = User.objects.all()
+    serializer_class = UserAdminSerializer
+
     def perform_create(self, serializer):
         user = serializer.save()
 
-        is_superuser = serializer.validated_data.get("is_superuser")
+        get_library_admin = LibraryEmployee.objects.filter(
+            employee=self.request.user
+        ).first()
 
-        library_id = int(self.request.data.get("library_id"))
+        library = get_library_admin.library if get_library_admin else None
 
-        if is_superuser and library_id:
-            library_data = get_object_or_404(Library, id=library_id)
+        add_admin_in_library = LibraryEmployee.objects.create(
+            employee=user, library=library
+        )
 
-            employeeUser = LibraryEmployee.objects.create(
-                employee=user, library=library_data
-            )
-
-            employeeUser.save()
+        add_admin_in_library.save()
 
 
 class UserDetailsView(generics.RetrieveUpdateDestroyAPIView):
@@ -63,6 +102,30 @@ class UserFollowingBooksListView(generics.ListAPIView):
     permission_classes = [IsAuthenticated, IsAccountOwnerOrAdminOrEmployeeFollow]
     queryset = Following.objects.all()
     serializer_class = FollowingSerializerGet
+
+    def get_queryset(self):
+        title = self.request.query_params.get("title")
+        type = self.request.query_params.get("type")
+        author = self.request.query_params.get("author")
+        publishing_company = self.request.query_params.get("publishing_company")
+
+        queryset = super().get_queryset()
+
+        if title:
+            queryset = queryset.filter(book__title__istartswith=title)
+
+        if type:
+            queryset = queryset.filter(book__type__icontains=type)
+
+        if author:
+            queryset = queryset.filter(book__author__istartswith=author)
+
+        if publishing_company:
+            queryset = queryset.filter(
+                book__publishing_company__istartswith=publishing_company
+            )
+
+        return queryset
 
 
 class UserFollowingBooksCreateView(generics.CreateAPIView):
@@ -97,6 +160,29 @@ class UserFollowingBooksDetailsView(generics.RetrieveDestroyAPIView):
     queryset = Following.objects.all()
     serializer_class = FollowingSerializerGet
 
+    def get_object(self):
+        lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
+
+        assert lookup_url_kwarg in self.kwargs, (
+            "Expected view %s to be called with a URL keyword argument "
+            'named "%s". Fix your URL conf, or set the `.lookup_field` '
+            "attribute on the view correctly."
+            % (self.__class__.__name__, lookup_url_kwarg)
+        )
+
+        book_title = self.kwargs[lookup_url_kwarg]
+
+        book = get_object_or_404(Book, title__istartswith=book_title)
+
+        following = get_object_or_404(Following, book=book)
+
+        self.check_object_permissions(self.request, following)
+
+        return following
+
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
+
 
 class UserRatingBookCreateView(generics.CreateAPIView):
     authentication_classes = [JWTAuthentication]
@@ -129,6 +215,30 @@ class UserRatingBooksListView(generics.ListAPIView):
     queryset = Rating.objects.all()
     serializer_class = RatingSerializerGet
 
+    def get_queryset(self):
+        title = self.request.query_params.get("title")
+        type = self.request.query_params.get("type")
+        author = self.request.query_params.get("author")
+        publishing_company = self.request.query_params.get("publishing_company")
+
+        queryset = super().get_queryset()
+
+        if title:
+            queryset = queryset.filter(book__title__istartswith=title)
+
+        if type:
+            queryset = queryset.filter(book__type__icontains=type)
+
+        if author:
+            queryset = queryset.filter(book__author__istartswith=author)
+
+        if publishing_company:
+            queryset = queryset.filter(
+                book__publishing_company__istartswith=publishing_company
+            )
+
+        return queryset
+
 
 class UserRatingBookDetailsView(generics.RetrieveDestroyAPIView):
     authentication_classes = [JWTAuthentication]
@@ -136,17 +246,40 @@ class UserRatingBookDetailsView(generics.RetrieveDestroyAPIView):
     queryset = Rating.objects.all()
     serializer_class = RatingSerializerGet
 
+    def get_object(self):
+        lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
+
+        assert lookup_url_kwarg in self.kwargs, (
+            "Expected view %s to be called with a URL keyword argument "
+            'named "%s". Fix your URL conf, or set the `.lookup_field` '
+            "attribute on the view correctly."
+            % (self.__class__.__name__, lookup_url_kwarg)
+        )
+
+        book_title = self.kwargs[lookup_url_kwarg]
+
+        book = get_object_or_404(Book, title__istartswith=book_title)
+
+        following = get_object_or_404(Rating, book=book)
+
+        self.check_object_permissions(self.request, following)
+
+        return following
+
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
+
 
 class HireALibrarianView(generics.CreateAPIView):
     authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticated, IsAdminUser]
+    permission_classes = [IsAdminUser]
     queryset = LibraryEmployee.objects.all()
     serializer_class = LibraryEmployeeSerializer
 
     def perform_create(self, serializer):
-        user_id = self.kwargs.get("pk")
+        user_cpf = self.kwargs.get("cpf")
 
-        user = get_object_or_404(User, id=user_id)
+        user = get_object_or_404(User, cpf=user_cpf)
 
         get_library_admin = LibraryEmployee.objects.filter(
             employee=self.request.user
@@ -184,7 +317,7 @@ class RetrieveOrFireEmployeeView(generics.RetrieveUpdateAPIView):
             % (self.__class__.__name__, lookup_url_kwarg)
         )
 
-        user = get_object_or_404(User, pk=self.kwargs[lookup_url_kwarg])
+        user = get_object_or_404(User, cpf=self.kwargs[lookup_url_kwarg])
 
         library_employee = get_object_or_404(
             LibraryEmployee, employee=user, is_employee=True
@@ -238,7 +371,7 @@ class UnblockStudentView(generics.UpdateAPIView):
             % (self.__class__.__name__, lookup_url_kwarg)
         )
 
-        user = get_object_or_404(User, pk=self.kwargs[lookup_url_kwarg])
+        user = get_object_or_404(User, cpf=self.kwargs[lookup_url_kwarg])
 
         library_employee = get_object_or_404(
             LibraryEmployee, employee=self.request.user, is_employee=True
@@ -265,3 +398,16 @@ class UnblockStudentView(generics.UpdateAPIView):
         return Response(
             {"message": "user unblocked with success"}, status=status.HTTP_200_OK
         )
+
+
+class ListLoanUserViews(generics.ListAPIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated, IsAccountOwnerOrAdminOrEmployeeFollow]
+    queryset = Loan.objects.all()
+    serializer_class = ListLoanUserSerializer
+
+    def get_queryset(self):
+        user = get_object_or_404(User, cpf=self.kwargs["cpf"])
+        queryset = Loan.objects.filter(user=user)
+
+        return queryset
