@@ -3,7 +3,7 @@ from django.db import models
 
 class Library(models.Model):
     name = models.CharField(max_length=100, null=False)
-    cnpj = models.CharField(max_length=11, null=False, unique=True)
+    cnpj = models.CharField(max_length=14, null=False, unique=True)
     email = models.CharField(max_length=150, null=False, unique=True)
     address = models.CharField(max_length=200)
 
@@ -15,7 +15,7 @@ class LibraryEmployee(models.Model):
     employee = models.ForeignKey(
         "users.User", on_delete=models.CASCADE, related_name="libraries"
     )
-    is_employee = models.BooleanField(default=True, null=False)
+    is_employee = models.BooleanField(default=True, null=True)
 
 
 class LibraryBooks(models.Model):
@@ -30,4 +30,4 @@ class UserLibraryBlock(models.Model):
     user = models.ForeignKey(
         "users.User", on_delete=models.CASCADE, related_name="libraries_blocked"
     )
-    is_blocked = models.BooleanField(default=False)
+    is_blocked = models.BooleanField(default=True, null=True)

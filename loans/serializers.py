@@ -26,6 +26,7 @@ def devolution_date():
     return end_date
 
 
+
 class LoanSerializer(serializers.ModelSerializer):
     # copy = CopySerializer(read_only=True)
     # user_id = UserSerializer(read_only=True)
@@ -44,6 +45,7 @@ class LoanSerializer(serializers.ModelSerializer):
             "start_date": {"read_only": True},
             "copy": {"read_only": True},
         }
+            
 
     def create(self, validated_data: dict) -> Loan:
 

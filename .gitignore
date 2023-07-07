@@ -4,11 +4,4 @@ __pycache__
 db.sqlite3
 .env
 .mypy_cache
-teste.py
-migrations
-meuteste.py
 
-users
-libraries
-copies
-books
