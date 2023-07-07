@@ -93,3 +93,7 @@ class LoanSerializer(serializers.ModelSerializer):
         instance.save()
 
         return instance
+
+
+class ListLoanUserSerializer(LoanSerializer):
+    user = UserSerializer(write_only=True)
