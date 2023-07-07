@@ -8,7 +8,7 @@ class CopySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Copy
-        fields = ["id", "quantity", "book"]
+        fields = ["id", "book", "is_available"]
 
     def create(self, validated_data: dict) -> Copy:
         return Copy.objects.create(**validated_data)
