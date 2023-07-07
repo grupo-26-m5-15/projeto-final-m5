@@ -2,11 +2,10 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from rest_framework.fields import ReadOnlyField
 from .models import User
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 
 class UserSerializer(serializers.ModelSerializer):
-    library_id = serializers.SerializerMethodField()
-
     class Meta:
         model = User
         fields = [
@@ -20,7 +19,6 @@ class UserSerializer(serializers.ModelSerializer):
             "password",
             "is_superuser",
             "image",
-            "library_id",
         ]
 
         extra_kwargs = {
@@ -37,21 +35,7 @@ class UserSerializer(serializers.ModelSerializer):
 
         return fields
 
-    def get_library_id(self, obj):
-        request = self.context.get("request")
-
-        library_id_value = request.data.get("library_id")
-
-        if library_id_value:
-            return library_id_value
-
-        return None
-
     def create(self, validated_data: dict) -> User:
-        superuser = validated_data.get("is_superuser")
-        if superuser:
-            return User.objects.create_superuser(**validated_data)
-
         return User.objects.create_user(**validated_data)
 
     def update(self, instance: User, validated_data: dict) -> User:
@@ -65,3 +49,22 @@ class UserSerializer(serializers.ModelSerializer):
         instance.save()
 
         return instance
+
+
+class UserAdminSerializer(UserSerializer):
+    def create(self, validated_data: dict) -> User:
+        return User.objects.create_superuser(**validated_data)
+
+
+class EmailTokenObtainPairSerializer(TokenObtainPairSerializer):
+    def validate(self, attrs):
+        data = super().validate(attrs)
+
+        email = attrs.get("email")
+        password = attrs.get("password")
+
+        if email and password:
+            user = self.user
+            data["username"] = user.username
+
+        return data
