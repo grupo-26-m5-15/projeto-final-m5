@@ -8,7 +8,11 @@ class Library(models.Model):
     address = models.CharField(max_length=200)
 
     employees = models.ManyToManyField(
-        "users.User", through="LibraryEmployee", related_name="my_library"
+        "users.User", through="LibraryEmployee"
+    )
+
+    books = models.ManyToManyField(
+        "books.Book", through="LibraryBooks"
     )
 
 
@@ -23,9 +27,11 @@ class LibraryEmployee(models.Model):
 
 
 class LibraryBooks(models.Model):
-    library = models.ForeignKey(Library, on_delete=models.CASCADE, related_name="books")
+    library = models.ForeignKey(
+        Library, on_delete=models.CASCADE
+    )
     book = models.ForeignKey(
-        "books.Book", on_delete=models.CASCADE, related_name="libraries"
+        "books.Book", on_delete=models.CASCADE
     )
 
 

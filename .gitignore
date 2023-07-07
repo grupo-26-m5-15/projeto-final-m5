@@ -5,11 +5,4 @@ __pycache__
 db.sqlite3
 .env
 .mypy_cache
-<<<<<<< HEAD
-<<<<<<< HEAD
 migrations
-=======
->>>>>>> feat/loans
-=======
-migrations
->>>>>>> fed529702ddd4fafaa5a934be9eeb194eeb73d30
