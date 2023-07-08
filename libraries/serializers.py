@@ -103,4 +103,4 @@ class LibraryEmployee(LibraryEmployeeSerializer):
 
 
 class UserLibraryBlockListSerializer(UserLibraryBlockSerializer):
-    user = UserSerializer(write_only=True)
+    library = LibrarySerializer(write_only=True)

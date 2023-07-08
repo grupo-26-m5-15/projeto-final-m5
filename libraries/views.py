@@ -14,7 +14,7 @@ from loans.models import Loan
 from loans.serializers import LoanSerializer
 
 from .models import Library, LibraryBooks, LibraryEmployee, UserLibraryBlock
-from .serializers import LibrarySerializer, LibraryEmployeeSerializer, LibraryEmployee
+from .serializers import LibrarySerializer, LibraryEmployeeSerializer, LibraryEmployee, UserLibraryBlockListSerializer
 from .permissions import IsLibraryEmployee
 from .serializers import LibrarySerializer
 
@@ -80,4 +80,17 @@ class ListLibraryLoans(ListAPIView):
     def get_queryset(self):
         library = get_object_or_404(Library, pk=self.kwargs.get("pk"))
         queryset = Loan.objects.filter(library=library)
+        return queryset
+
+
+class ListLibraryUsersBlocked(ListAPIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    queryset = UserLibraryBlock
+    serializer_class = UserLibraryBlockListSerializer
+
+    def get_queryset(self):
+        library = get_object_or_404(Library, pk=self.kwargs.get("pk"))
+        queryset = UserLibraryBlock.objects.filter(library=library)
         return queryset
