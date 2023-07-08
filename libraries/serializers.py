@@ -90,3 +90,7 @@ class UserLibraryBlockSerializer(serializers.ModelSerializer):
         instance.save()
 
         return instance
+
+
+class UserLibraryBlockListSerializer(UserLibraryBlockSerializer):
+    user = UserSerializer(write_only=True)

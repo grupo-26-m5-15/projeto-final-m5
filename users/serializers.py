@@ -24,6 +24,7 @@ class UserSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             "password": {"write_only": True},
             "email": {"validators": [UniqueValidator(queryset=User.objects.all())]},
+            "is_superuser": {"read_only": True},
         }
 
     def get_fields(self):
@@ -62,9 +63,16 @@ class EmailTokenObtainPairSerializer(TokenObtainPairSerializer):
 
         email = attrs.get("email")
         password = attrs.get("password")
+        attrs["username"] = None
 
         if email and password:
             user = self.user
             data["username"] = user.username
 
         return data
+
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+        token["username"] = None
+        return token
