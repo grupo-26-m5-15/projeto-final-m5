@@ -17,5 +17,5 @@ class Loan(models.Model):
     )
 
     library = models.ForeignKey(
-        "libraries.Library", on_delete=models.CASCADE, related_name="loan"
+        "libraries.Library", on_delete=models.PROTECT, related_name="loan"
     )

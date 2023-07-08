@@ -18,7 +18,11 @@ from .serializers import (
 from loans.models import Loan
 from loans.serializers import ListLoanUserSerializer
 from libraries.models import LibraryEmployee, Library, UserLibraryBlock
-from libraries.serializers import LibraryEmployeeSerializer, UserLibraryBlockSerializer
+from libraries.serializers import (
+    LibraryEmployeeSerializer,
+    UserLibraryBlockSerializer,
+    UserLibraryBlockListSerializer,
+)
 from .models import User
 from django.shortcuts import get_object_or_404
 from books.models import Following, Book, Rating
@@ -69,19 +73,15 @@ class UserPostView(generics.CreateAPIView):
 
 
 class UserAdminView(generics.CreateAPIView):
-    authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAdminUser]
     queryset = User.objects.all()
     serializer_class = UserAdminSerializer
 
     def perform_create(self, serializer):
         user = serializer.save()
 
-        get_library_admin = LibraryEmployee.objects.filter(
-            employee=self.request.user
-        ).first()
+        get_library_id = self.kwargs.get("pk")
 
-        library = get_library_admin.library if get_library_admin else None
+        library = get_object_or_404(Library, pk=int(get_library_id))
 
         add_admin_in_library = LibraryEmployee.objects.create(
             employee=user, library=library
@@ -95,6 +95,28 @@ class UserDetailsView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated, IsAccountOwnerOrAdminOrEmployee]
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    lookup_field = "cpf"
+
+    def get_object(self):
+        lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
+
+        assert lookup_url_kwarg in self.kwargs, (
+            "Expected view %s to be called with a URL keyword argument "
+            'named "%s". Fix your URL conf, or set the `.lookup_field` '
+            "attribute on the view correctly."
+            % (self.__class__.__name__, lookup_url_kwarg)
+        )
+
+        user_cpf = self.kwargs[lookup_url_kwarg]
+
+        user = get_object_or_404(User, cpf=user_cpf)
+
+        self.check_object_permissions(self.request, user)
+
+        return user
+
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
 
 
 class UserFollowingBooksListView(generics.ListAPIView):
@@ -159,6 +181,7 @@ class UserFollowingBooksDetailsView(generics.RetrieveDestroyAPIView):
     permission_classes = [IsAuthenticated, IsAccountOwnerFollow]
     queryset = Following.objects.all()
     serializer_class = FollowingSerializerGet
+    lookup_field = "title"
 
     def get_object(self):
         lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
@@ -245,6 +268,7 @@ class UserRatingBookDetailsView(generics.RetrieveDestroyAPIView):
     permission_classes = [IsAuthenticated, IsAccountOwnerFollow]
     queryset = Rating.objects.all()
     serializer_class = RatingSerializerGet
+    lookup_field = "title"
 
     def get_object(self):
         lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
@@ -275,6 +299,7 @@ class HireALibrarianView(generics.CreateAPIView):
     permission_classes = [IsAdminUser]
     queryset = LibraryEmployee.objects.all()
     serializer_class = LibraryEmployeeSerializer
+    lookup_field = "cpf"
 
     def perform_create(self, serializer):
         user_cpf = self.kwargs.get("cpf")
@@ -306,6 +331,7 @@ class RetrieveOrFireEmployeeView(generics.RetrieveUpdateAPIView):
     permission_classes = [IsAuthenticated, IsAdminUser]
     queryset = LibraryEmployee.objects.all()
     serializer_class = LibraryEmployeeSerializer
+    lookup_field = "cpf"
 
     def get_object(self):
         lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
@@ -347,10 +373,11 @@ class ListAllUserLibraryBlocksView(generics.ListAPIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated, IsAccountOwnerOrAdminOrEmployeeFollow]
     queryset = UserLibraryBlock.objects.all()
-    serializer_class = UserLibraryBlockSerializer
+    serializer_class = UserLibraryBlockListSerializer
+    lookup_field = "cpf"
 
     def get_queryset(self):
-        user = get_object_or_404(User, pk=self.kwargs["pk"])
+        user = get_object_or_404(User, cpf=self.kwargs["cpf"])
         queryset = UserLibraryBlock.objects.filter(user=user, is_blocked=True)
         return queryset
 
@@ -360,6 +387,7 @@ class UnblockStudentView(generics.UpdateAPIView):
     permission_classes = [IsAdminOrEmployee]
     queryset = UserLibraryBlock.objects.all()
     serializer_class = UserLibraryBlockSerializer
+    lookup_field = "cpf"
 
     def get_object(self):
         lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
@@ -405,6 +433,7 @@ class ListLoanUserViews(generics.ListAPIView):
     permission_classes = [IsAuthenticated, IsAccountOwnerOrAdminOrEmployeeFollow]
     queryset = Loan.objects.all()
     serializer_class = ListLoanUserSerializer
+    lookup_field = "cpf"
 
     def get_queryset(self):
         user = get_object_or_404(User, cpf=self.kwargs["cpf"])

@@ -100,3 +100,7 @@ class UserLibraryBlockSerializer(serializers.ModelSerializer):
 
 class LibraryEmployee(LibraryEmployeeSerializer):
     library = LibrarySerializer(write_only=True)
+
+
+class UserLibraryBlockListSerializer(UserLibraryBlockSerializer):
+    user = UserSerializer(write_only=True)
