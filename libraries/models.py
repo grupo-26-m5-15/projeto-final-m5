@@ -7,21 +7,31 @@ class Library(models.Model):
     email = models.CharField(max_length=150, null=False, unique=True)
     address = models.CharField(max_length=200)
 
+    employees = models.ManyToManyField(
+        "users.User", through="LibraryEmployee"
+    )
+
+    books = models.ManyToManyField(
+        "books.Book", through="LibraryBooks"
+    )
+
 
 class LibraryEmployee(models.Model):
     library = models.ForeignKey(
-        Library, on_delete=models.CASCADE, related_name="employees"
+        Library, on_delete=models.CASCADE
     )
     employee = models.ForeignKey(
-        "users.User", on_delete=models.CASCADE, related_name="libraries"
+        "users.User", on_delete=models.CASCADE
     )
     is_employee = models.BooleanField(default=True, null=True)
 
 
 class LibraryBooks(models.Model):
-    library = models.ForeignKey(Library, on_delete=models.CASCADE, related_name="books")
+    library = models.ForeignKey(
+        Library, on_delete=models.CASCADE
+    )
     book = models.ForeignKey(
-        "books.Book", on_delete=models.CASCADE, related_name="libraries"
+        "books.Book", on_delete=models.CASCADE
     )
 
 
