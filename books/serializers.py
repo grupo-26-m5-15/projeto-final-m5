@@ -34,6 +34,9 @@ class BookSerializer(serializers.ModelSerializer):
         Copy.objects.create(book=book)
         return book
 
+    def get(self, validated_data: dict) -> Book:
+        return Book.objects.all()
+
     def update(self, instance: Book, validated_data: dict) -> Book:
         for key, value in validated_data.items():
             setattr(instance, key, value)
