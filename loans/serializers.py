@@ -8,9 +8,15 @@ from django.shortcuts import get_object_or_404
 from django.db.models import F, Q
 from users.serializers import UserSerializer
 from .utils import Dates
+from libraries.serializers import LibrarySerializer
+from copies.serializers import CopySerializer
 
 
 class LoanSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+    library = LibrarySerializer(read_only=True)
+    copy = CopySerializer(read_only=True)
+
     class Meta:
         model = Loan
         fields = [

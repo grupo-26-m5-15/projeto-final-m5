@@ -16,8 +16,9 @@ from .views import (
     ListAllUserLibraryBlocksView,
     UnblockStudentView,
     ListLoanUserViews,
-    LoginTokenObtainPairView,
 )
+
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 
 urlpatterns = [
@@ -25,7 +26,7 @@ urlpatterns = [
     path("users/create/", UserPostView.as_view()),
     path("users/<int:pk>/create_admin", UserAdminView.as_view()),
     path("users/<str:cpf>/", UserDetailsView.as_view()),
-    path("login/", LoginTokenObtainPairView.as_view()),
+    path("login/", TokenObtainPairView.as_view()),
     path("users/books/following/", UserFollowingBooksListView.as_view()),
     path("users/book/<int:pk>/follow/", UserFollowingBooksCreateView.as_view()),
     path(
