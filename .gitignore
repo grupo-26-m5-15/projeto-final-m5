@@ -1,8 +1,8 @@
 venv
-.venv
 __pycache__
+.mypy_cache
 .vscode
 db.sqlite3
 .env
-.mypy_cache
-migrations
+
+
