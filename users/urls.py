@@ -16,7 +16,7 @@ from .views import (
     ListAllUserLibraryBlocksView,
     UnblockStudentView,
     ListLoanUserViews,
-    EmailTokenObtainPairView,
+    LoginTokenObtainPairView,
 )
 
 
@@ -25,7 +25,7 @@ urlpatterns = [
     path("users/create/", UserPostView.as_view()),
     path("users/<int:pk>/create_admin", UserAdminView.as_view()),
     path("users/<str:cpf>/", UserDetailsView.as_view()),
-    path("login/", EmailTokenObtainPairView.as_view()),
+    path("login/", LoginTokenObtainPairView.as_view()),
     path("users/books/following/", UserFollowingBooksListView.as_view()),
     path("users/book/<int:pk>/follow/", UserFollowingBooksCreateView.as_view()),
     path(

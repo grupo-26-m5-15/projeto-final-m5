@@ -29,5 +29,28 @@ source venv/Scripts/activate
 pip install -r requirements.txt
 ```
 
-4. Access the documentation to view and test all routes
-   .../api/docs/
+4. Run the migrations:
+
+```bash
+python manage.py makemigrations
+```
+
+```bash
+python manage.py migrate
+```
+
+5. Run the server:
+
+```bash
+python manage.py runserver
+```
+
+6. Access the documentation to view and test all routes
+
+```bash
+localhost/api/docs/
+```
+
+## BiblioteKa Diagram
+
+![Getting Started](./BiblioteKa.jpg)

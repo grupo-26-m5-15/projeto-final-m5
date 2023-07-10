@@ -2,7 +2,6 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from rest_framework.fields import ReadOnlyField
 from .models import User
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -55,24 +54,3 @@ class UserSerializer(serializers.ModelSerializer):
 class UserAdminSerializer(UserSerializer):
     def create(self, validated_data: dict) -> User:
         return User.objects.create_superuser(**validated_data)
-
-
-class EmailTokenObtainPairSerializer(TokenObtainPairSerializer):
-    def validate(self, attrs):
-        data = super().validate(attrs)
-
-        email = attrs.get("email")
-        password = attrs.get("password")
-        attrs["username"] = None
-
-        if email and password:
-            user = self.user
-            data["username"] = user.username
-
-        return data
-
-    @classmethod
-    def get_token(cls, user):
-        token = super().get_token(user)
-        token["username"] = None
-        return token
