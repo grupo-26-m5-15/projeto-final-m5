@@ -32,6 +32,8 @@ from books.serializers import (
     RatingSerializerGet,
     FollowingSerializerGet,
 )
+from drf_spectacular.utils import extend_schema, OpenApiParameter
+from drf_spectacular.types import OpenApiTypes
 
 
 class EmailTokenObtainPairView(TokenObtainPairView):
