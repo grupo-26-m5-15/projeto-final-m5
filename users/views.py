@@ -10,11 +10,7 @@ from .permissions import (
     IsAccountOwnerFollow,
 )
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
-from .serializers import (
-    UserSerializer,
-    UserAdminSerializer,
-    EmailTokenObtainPairSerializer,
-)
+from .serializers import UserSerializer, UserAdminSerializer
 from loans.models import Loan
 from loans.serializers import ListLoanUserSerializer
 from libraries.models import LibraryEmployee, Library, UserLibraryBlock
@@ -34,19 +30,18 @@ from books.serializers import (
 )
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 from drf_spectacular.types import OpenApiTypes
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 
-class EmailTokenObtainPairView(TokenObtainPairView):
-    serializer_class = EmailTokenObtainPairSerializer
-
+class LoginTokenObtainPairView(TokenObtainPairView):
     @extend_schema(
         operation_id="login_user",
         parameters=[
-            EmailTokenObtainPairSerializer,
+            TokenObtainPairSerializer,
             OpenApiParameter("pk", OpenApiTypes.UUID, OpenApiParameter.PATH),
             OpenApiParameter("queryparam1", OpenApiTypes.UUID, OpenApiParameter.QUERY),
         ],
-        request=EmailTokenObtainPairSerializer,
+        request=TokenObtainPairSerializer,
         description="Login user route",
         summary="Login user by adding username and password",
         tags=["Login User"],
