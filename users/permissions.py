@@ -22,7 +22,7 @@ class IsAccountOwnerOrAdminOrEmployee(permissions.BasePermission):
         if request.user.is_authenticated and request.user.is_superuser:
             return True
 
-        if request.user.is_authenticated and obj.user == request.user:
+        if request.user.is_authenticated and obj == request.user:
             return True
 
         try:

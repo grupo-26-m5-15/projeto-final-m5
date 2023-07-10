@@ -1,11 +1,8 @@
 venv
-
 __pycache__
-migrations
 .mypy_cache
-
 .vscode
 db.sqlite3
 .env
 
-meuteste.py
+

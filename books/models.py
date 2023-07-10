@@ -7,7 +7,7 @@ class Book(models.Model):
     author = models.CharField(max_length=150)
     synopsis = models.CharField(max_length=255)
     release_date = models.DateField()
-    publishing_company = models.CharField(max_length=11)
+    publishing_company = models.CharField()
     add_at = models.DateTimeField(auto_now_add=True)
     quantity = models.IntegerField(default=0)
     image = models.URLField(null=True)
