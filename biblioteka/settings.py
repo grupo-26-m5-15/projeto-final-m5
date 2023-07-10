@@ -154,6 +154,13 @@ REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
 
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Biblioteka",
+    "DESCRIPTION": "The application is a Restful API that aims to manage information related to the operation of various libraries.",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+}
+
 TIME_ZONE = "UTC"
 
 USE_I18N = True

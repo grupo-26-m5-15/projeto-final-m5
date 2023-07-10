@@ -5,8 +5,6 @@ from .models import User
 
 
 class UserSerializer(serializers.ModelSerializer):
-    library_id = serializers.SerializerMethodField()
-
     class Meta:
         model = User
         fields = [
@@ -20,12 +18,12 @@ class UserSerializer(serializers.ModelSerializer):
             "password",
             "is_superuser",
             "image",
-            "library_id",
         ]
 
         extra_kwargs = {
             "password": {"write_only": True},
             "email": {"validators": [UniqueValidator(queryset=User.objects.all())]},
+            "is_superuser": {"read_only": True},
         }
 
     def get_fields(self):
@@ -37,21 +35,7 @@ class UserSerializer(serializers.ModelSerializer):
 
         return fields
 
-    def get_library_id(self, obj):
-        request = self.context.get("request")
-
-        library_id_value = request.data.get("library_id")
-
-        if library_id_value:
-            return library_id_value
-
-        return None
-
     def create(self, validated_data: dict) -> User:
-        superuser = validated_data.get("is_superuser")
-        if superuser:
-            return User.objects.create_superuser(**validated_data)
-
         return User.objects.create_user(**validated_data)
 
     def update(self, instance: User, validated_data: dict) -> User:
@@ -65,3 +49,8 @@ class UserSerializer(serializers.ModelSerializer):
         instance.save()
 
         return instance
+
+
+class UserAdminSerializer(UserSerializer):
+    def create(self, validated_data: dict) -> User:
+        return User.objects.create_superuser(**validated_data)

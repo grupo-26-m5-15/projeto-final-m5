@@ -6,6 +6,10 @@ from books.serializers import BookSerializer
 
 
 class LibrarySerializer(serializers.ModelSerializer):
+
+    employees = UserSerializer(read_only=True, many=True)
+    books = BookSerializer(read_only=True, many=True)
+
     class Meta:
         model = Library
         fields = [
@@ -14,6 +18,8 @@ class LibrarySerializer(serializers.ModelSerializer):
             "cnpj",
             "email",
             "address",
+            "employees",
+            "books"
         ]
 
     def create(self, validated_data):
@@ -37,9 +43,11 @@ class LibraryEmployeeSerializer(serializers.ModelSerializer):
         fields = ["id", "library", "employee", "is_employee"]
 
     def create(self, validated_data):
-        return Library.objects.create(**validated_data)
+        return LibraryEmployee.objects.create(**validated_data)
 
-    def update(self, instance: Library, validated_data: dict) -> Library:
+    def update(
+        self, instance: LibraryEmployee, validated_data: dict
+    ) -> LibraryEmployee:
         for key, value in validated_data.items():
             setattr(instance, key, value)
 
@@ -49,12 +57,12 @@ class LibraryEmployeeSerializer(serializers.ModelSerializer):
 
 
 class LibraryBooksSerializer(serializers.ModelSerializer):
-    book = BookSerializer(read_only=True)
+    books = BookSerializer(read_only=True, many=True)
     library = LibrarySerializer(read_only=True)
 
     class Meta:
         model = LibraryBooks
-        fields = ["id", "book", "library"]
+        fields = ["id", "books", "library"]
 
     def create(self, validated_data):
         return LibraryBooks.objects.create(**validated_data)
@@ -88,3 +96,11 @@ class UserLibraryBlockSerializer(serializers.ModelSerializer):
         instance.save()
 
         return instance
+
+
+class LibraryEmployee(LibraryEmployeeSerializer):
+    library = LibrarySerializer(write_only=True)
+
+
+class UserLibraryBlockListSerializer(UserLibraryBlockSerializer):
+    library = LibrarySerializer(write_only=True)
