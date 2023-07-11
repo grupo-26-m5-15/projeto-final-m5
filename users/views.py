@@ -1,5 +1,4 @@
 from rest_framework import generics
-from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.views import Response, status
 from rest_framework.exceptions import ValidationError
 from rest_framework_simplejwt.authentication import JWTAuthentication
@@ -12,7 +11,7 @@ from .permissions import (
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from .serializers import UserSerializer, UserAdminSerializer
 from loans.models import Loan
-from loans.serializers import ListLoanUserSerializer 
+from loans.serializers import ListLoanUserSerializer
 from libraries.models import LibraryEmployee, Library, UserLibraryBlock
 from libraries.serializers import (
     LibraryEmployeeSerializer,
@@ -30,24 +29,6 @@ from books.serializers import (
 )
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 from drf_spectacular.types import OpenApiTypes
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-
-
-class LoginTokenObtainPairView(TokenObtainPairView):
-    @extend_schema(
-        operation_id="login_user",
-        parameters=[
-            TokenObtainPairSerializer,
-            OpenApiParameter("pk", OpenApiTypes.UUID, OpenApiParameter.PATH),
-            OpenApiParameter("queryparam1", OpenApiTypes.UUID, OpenApiParameter.QUERY),
-        ],
-        request=TokenObtainPairSerializer,
-        description="Login user route",
-        summary="Login user by adding username and password",
-        tags=["Login User"],
-    )
-    def post(self, request, *args, **kwargs):
-        return super().post(request, *args, **kwargs)
 
 
 class UserListView(generics.ListAPIView):
