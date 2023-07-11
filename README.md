@@ -48,7 +48,7 @@ python manage.py runserver
 6. Access the documentation to view and test all routes
 
 ```bash
-localhost/api/docs/
+https://biblioteka-app.onrender.com/api/docs/
 ```
 
 ## BiblioteKa Diagram

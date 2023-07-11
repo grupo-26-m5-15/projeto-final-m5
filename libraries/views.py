@@ -1,6 +1,10 @@
-from rest_framework.views import APIView, Request, Response, status
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
-from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveUpdateDestroyAPIView, get_object_or_404
+from rest_framework.generics import (
+    ListAPIView,
+    CreateAPIView,
+    RetrieveUpdateDestroyAPIView,
+    get_object_or_404,
+)
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from users.models import User
@@ -13,10 +17,11 @@ from books.serializers import BookSerializer
 from loans.models import Loan
 from loans.serializers import LoanSerializer
 
-from .models import Library, LibraryBooks, LibraryEmployee, UserLibraryBlock
-from .serializers import LibrarySerializer, LibraryEmployeeSerializer, LibraryEmployee, UserLibraryBlockListSerializer
-from .permissions import IsLibraryEmployee
-from .serializers import LibrarySerializer
+from .models import Library, UserLibraryBlock
+from .serializers import (
+    LibrarySerializer,
+    UserLibraryBlockListSerializer,
+)
 
 
 class ListLibraryView(ListAPIView):
@@ -29,16 +34,15 @@ class ListLibraryView(ListAPIView):
 
 class CreateLibraryView(CreateAPIView):
     authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticated, IsAdminUser]
+    permission_classes = [IsAdminUser]
 
     queryset = Library.objects.all()
     serializer_class = LibrarySerializer
 
 
 class LibraryDetailViews(RetrieveUpdateDestroyAPIView):
-
     authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAdminUser]
 
     queryset = Library.objects.all()
     serializer_class = LibrarySerializer
@@ -72,7 +76,7 @@ class ListLibraryEmployees(ListAPIView):
 
 class ListLibraryLoans(ListAPIView):
     authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsAdminOrEmployee]
 
     queryset = Loan.objects.all()
     serializer_class = LoanSerializer
@@ -85,7 +89,7 @@ class ListLibraryLoans(ListAPIView):
 
 class ListLibraryUsersBlocked(ListAPIView):
     authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsAdminOrEmployee]
 
     queryset = UserLibraryBlock
     serializer_class = UserLibraryBlockListSerializer
