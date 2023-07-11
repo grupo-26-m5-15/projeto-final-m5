@@ -1,17 +1,14 @@
-# from rest_framework import serializers
-# from .models import Loan
-# from users.models import User
-# from libraries.models import Library
-# from copies.models import Copy
-# from books.models import Book, Following
-# from django.shortcuts import get_object_or_404
-# from django.db.models import F
-# from users.serializers import UserSerializer
+
+from libraries.models import UserLibraryBlock
 
 import calendar
 from datetime import date, datetime as dt
 from dateutil.relativedelta import relativedelta
 from django.utils import timezone
+from django.db.models import Q
+from django.conf import settings
+from books.models import Following
+from django.core.mail import send_mail
 
 
 class Dates():
@@ -29,22 +26,42 @@ class Dates():
             end_date = timezone.now() + relativedelta(days=+ day)
         return end_date
 
-
-def books_request():
-    ...
-
-
-def followings_request():
-    ...
+    def unblocked_date(self, devolution_date):
+        if devolution_date:
+            return self.today > devolution_date + relativedelta(days=+4)
+        return False
 
 
-def users_request():
-    ...
+def send_email(user, message):
+    following_list = Following.objects.all().filter(user=user)
+    user_list = [objuser.user.email for objuser in following_list]
+
+    send_mail(
+        subject="Biblioteka",
+        message=message,
+        recipient_list=user_list,
+        from_email=settings.EMAIL_HOST_USER,
+        fail_silently=False,
+    )
 
 
-def copies_request():
-    ...
+def user_is_blocked(user, library):
+    user = UserLibraryBlock.objects.filter(
+        user=user, library=library).first()
+    if user:
+        return user.is_blocked
+    return False
 
 
-def libraries_request():
-    ...
+def unblocked_user(user, library):
+    UserLibraryBlock.objects.get(
+        user=user, library=library).delete()
+
+
+def block_user(user, library):
+    if not user_is_blocked(user, library):
+        UserLibraryBlock.objects.create(
+            user=user, library=library).save()
+
+    UserLibraryBlock.objects.filter(
+        user=user, library=library).update(is_blocked=Q(is_blocked=True))
