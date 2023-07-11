@@ -25,9 +25,8 @@ class LoanListView(generics.ListAPIView):
     serializer_class = LoanSerializer
 
 
-class LoanRetrieveView(generics.RetrieveUpdateDestroyAPIView):
+class LoanRetrieveView(generics.RetrieveUpdateAPIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated, IsAdminOrEmployee]
-
     queryset = Loan.objects.all()
     serializer_class = LoanSerializer
