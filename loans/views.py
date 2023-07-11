@@ -1,14 +1,16 @@
-# from django.shortcuts import render
 from rest_framework import generics
 
 from .models import Loan
 from .serializers import LoanSerializer
 from rest_framework.pagination import PageNumberPagination
 from users.permissions import IsAdminOrEmployee
+from rest_framework.permissions import IsAuthenticated
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 
 class LoanCreateView(generics.CreateAPIView):
-    # permission_classes = [IsAdminOrEmployee]
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated, IsAdminOrEmployee]
 
     queryset = Loan.objects.all()
     serializer_class = LoanSerializer
@@ -16,13 +18,16 @@ class LoanCreateView(generics.CreateAPIView):
 
 class LoanListView(generics.ListAPIView):
     pagination_class = PageNumberPagination
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated, IsAdminOrEmployee]
 
     queryset = Loan.objects.all()
     serializer_class = LoanSerializer
 
 
 class LoanRetrieveView(generics.RetrieveUpdateDestroyAPIView):
-    # permission_classes = [IsAdminOrEmployee]
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated, IsAdminOrEmployee]
 
     queryset = Loan.objects.all()
     serializer_class = LoanSerializer

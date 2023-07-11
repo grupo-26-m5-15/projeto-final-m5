@@ -58,7 +58,7 @@ class LoanSerializer(serializers.ModelSerializer):
             if today > loan.end_date and loan.devolution_date == None:
                 block_user(user, library)
                 raise serializers.ValidationError(
-                    {"Error": "User Blocked HOHO"})
+                    {"Error": "User Blocked"})
 
         if copy.is_available is False or book.quantity < 1:
             raise serializers.ValidationError(
@@ -81,7 +81,7 @@ class LoanSerializer(serializers.ModelSerializer):
         book = Book.objects.get(pk=copy.book_id)
 
         if book.quantity < 1:
-            send_email(user, f"The book {book.title} currently available")
+            send_email(user, f"The book {book.title} is not available")
             Copy.objects.filter(book=book).update(
                 is_available=Q(is_available=False))
 
