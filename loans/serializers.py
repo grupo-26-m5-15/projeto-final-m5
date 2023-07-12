@@ -16,6 +16,8 @@ class LoanSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
     library = LibrarySerializer(read_only=True)
     copy = CopySerializer(read_only=True)
+    user_id = serializers.IntegerField(write_only=True)
+    library_id = serializers.IntegerField(write_only=True)
 
     class Meta:
         model = Loan
@@ -27,11 +29,15 @@ class LoanSerializer(serializers.ModelSerializer):
             "library",
             "user",
             "copy",
+            "user_id",
+            "library_id"
         ]
         depth = 1
         extra_kwargs = {
             "start_date": {"read_only": True},
             "copy": {"read_only": True},
+            "end_date": {"read_only": True},
+            "devolution_date": {"read_only": True},
         }
 
     def create(self, validated_data: dict) -> Loan:
