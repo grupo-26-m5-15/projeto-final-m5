@@ -17,7 +17,7 @@ from .models import Book
 from .serializers import BookSerializer
 from copies.models import Copy
 from copies.serializers import CopySerializer
-from users.permissions import IsAdminOrEmployee
+from users.permissions import IsAdminOrEmployee, SafeAccess
 
 
 class BookCreateView(CreateAPIView):
@@ -55,7 +55,7 @@ class BookListView(ListAPIView):
 
 class BookRetrieveUpdateView(RetrieveUpdateAPIView):
     authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticated, IsAdminOrEmployee]
+    permission_classes = [SafeAccess]
 
     serializer_class = BookSerializer
     queryset = Book.objects.all().order_by("id")
