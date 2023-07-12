@@ -55,8 +55,8 @@ class LibraryBooksSerializer(serializers.ModelSerializer):
         model = LibraryBooks
         fields = ["id", "books", "library"]
 
-    def create(self, validated_data):
-        return LibraryBooks.objects.create(**validated_data)
+    # def create(self, validated_data):
+    #     return LibraryBooks.objects.create(**validated_data)
 
     def update(self, instance: LibraryBooks, validated_data: dict) -> LibraryBooks:
         for key, value in validated_data.items():
