@@ -52,3 +52,12 @@ class IsAccountOwnerOrAdminOrEmployeeFollow(permissions.BasePermission):
 class IsAccountOwnerFollow(permissions.BasePermission):
     def has_object_permission(self, request, view: View, obj: User) -> bool:
         return request.user.is_authenticated and obj.user == request.user
+
+
+class SafeAccess(permissions.BasePermission):
+    def has_permission(self, request, view):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+
+        if request.user and request.user.is_authenticated:
+            return True

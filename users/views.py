@@ -96,6 +96,21 @@ class UserAdminView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserAdminSerializer
 
+    def perform_create(self, serializer):
+        get_library_id = self.kwargs.get("pk")
+
+        print(get_library_id)
+
+        library = get_object_or_404(Library, pk=int(get_library_id))
+
+        user = serializer.save()
+
+        add_admin_in_library = LibraryEmployee.objects.create(
+            employee=user, library=library
+        )
+
+        add_admin_in_library.save()
+
     @extend_schema(
         operation_id="create_admin",
         parameters=[
@@ -112,19 +127,6 @@ class UserAdminView(generics.CreateAPIView):
     )
     def post(self, request, *args, **kwargs):
         return super().post(request, *args, **kwargs)
-
-    def perform_create(self, serializer):
-        user = serializer.save()
-
-        get_library_id = self.kwargs.get("pk")
-
-        library = get_object_or_404(Library, pk=int(get_library_id))
-
-        add_admin_in_library = LibraryEmployee.objects.create(
-            employee=user, library=library
-        )
-
-        add_admin_in_library.save()
 
 
 class UserDetailsView(generics.RetrieveUpdateDestroyAPIView):
@@ -488,9 +490,12 @@ class HireALibrarianView(generics.CreateAPIView):
 
         user = get_object_or_404(User, cpf=user_cpf)
 
-        get_library_admin = LibraryEmployee.objects.filter(
-            employee=self.request.user
-        ).first()
+        try:
+            get_library_admin = LibraryEmployee.objects.filter(
+                employee=self.request.user
+            ).first()
+        except LibraryEmployee.DoesNotExist:
+            raise ValidationError({"message": "Admin to this library was not found"})
 
         library = get_library_admin.library if get_library_admin else None
 
