@@ -8,4 +8,5 @@ urlpatterns = [
     path("books/", views.BookListView.as_view()),
     path("books/<int:pk>/", views.BookRetrieveUpdateView.as_view()),
     path("books/<int:pk>/copies/", views.BookCopyListView.as_view()),
+    path("books/<str:title>/library/", views.BookLibraryCreate.as_view()),
 ]

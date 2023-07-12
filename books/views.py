@@ -13,11 +13,15 @@ from django.shortcuts import get_object_or_404
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 from drf_spectacular.types import OpenApiTypes
 
+from libraries.models import LibraryBooks, LibraryEmployee
+
 from .models import Book
 from .serializers import BookSerializer
 from copies.models import Copy
 from copies.serializers import CopySerializer
 from users.permissions import IsAdminOrEmployee, SafeAccess
+from libraries.serializers import LibraryBooksSerializer, Library
+from rest_framework.exceptions import ValidationError
 
 
 class BookCreateView(CreateAPIView):
@@ -92,3 +96,47 @@ class BookCopyListView(ListAPIView):
         book = get_object_or_404(Book, pk=self.kwargs.get("pk"))
 
         return Copy.objects.filter(book=book)
+
+
+class BookLibraryCreate(CreateAPIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated, IsAdminOrEmployee]
+    queryset = LibraryBooksSerializer.objects.all()
+    serializer_class = LibraryBooksSerializer
+    lookup_field = "title"
+
+    def perform_create(self, serializer):
+        book_title = self.kwargs.get("title")
+
+        book = get_object_or_404(Book, title=book_title)
+
+        try:
+            get_library_admin = LibraryEmployee.objects.filter(
+                employee=self.request.user
+            ).first()
+        except LibraryEmployee.DoesNotExist:
+            raise ValidationError({"message": "Admin to this library was not found"})
+
+        library = get_library_admin.library if get_library_admin else None
+
+        try:
+            book_library = LibraryBooks.objects.get(book=book, library=library)
+
+        except LibraryEmployee.DoesNotExist:
+            book_library = None
+
+        if book_library:
+            raise ValidationError(
+                {"message": "This book was already added to this library"}
+            )
+
+        serializer.save(book=book, library=library)
+
+    @extend_schema(
+        operation_id="create_library_book",
+        description="Add a specific book to a library by its title",
+        summary="Add book to a library",
+        tags=["Books"],
+    )
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)
