@@ -38,7 +38,7 @@ class ListLibraryView(ListAPIView):
         responses={200: LibrarySerializer},
         description="List all libraries",
         summary="Only admin users or employess can list all libraries",
-        tags=["List All Library"]
+        tags=["List All Library"],
     )
     def get(self, request, *args, **kwargs):
         return self.list(request, *args, **kwargs)
@@ -56,7 +56,7 @@ class CreateLibraryView(CreateAPIView):
         responses={201: LibrarySerializer},
         description="Create a library",
         summary="Only general manager can create libraries",
-        tags=["Create Library"]
+        tags=["Create Library"],
     )
     def post(self, req, *args, **kwargs):
         return self.create(req, *args, **kwargs)
@@ -74,17 +74,17 @@ class LibraryDetailViews(RetrieveUpdateDestroyAPIView):
         responses={200: LibrarySerializer},
         description="List library by ID",
         summary="Only admins and employees can list your libraries",
-        tags=["List library"]
+        tags=["List library"],
     )
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
-    
+
     @extend_schema(
         operation_id="Update_library",
         responses={200: LibrarySerializer},
         description="Update library information",
         summary="Only admins can update library informations",
-        tags=["Update library"]
+        tags=["Update library"],
     )
     def patch(self, request, *args, **kwargs):
         return super().patch(request, *args, **kwargs)
@@ -94,10 +94,14 @@ class LibraryDetailViews(RetrieveUpdateDestroyAPIView):
         responses={201: None},
         description="Delete library by ID",
         summary="Only general manager can destroy library",
-        tags=["Destroy library"]
+        tags=["Destroy library"],
     )
     def delete(self, request, *args, **kwargs):
         return super().delete(request, *args, **kwargs)
+
+    @extend_schema(exclude=True)
+    def put(self, request, *args, **kwargs):
+        return super().put(request, *args, **kwargs)
 
 
 class ListLibraryBooks(ListAPIView):
@@ -106,7 +110,7 @@ class ListLibraryBooks(ListAPIView):
 
     queryset = Book.objects.all()
     serializer_class = BookSerializer
-    
+
     def get_queryset(self):
         library = get_object_or_404(Library, pk=self.kwargs.get("pk"))
         queryset = Book.objects.filter(library=library)
@@ -117,7 +121,7 @@ class ListLibraryBooks(ListAPIView):
         responses={200: BookSerializer},
         description="List library book",
         summary="Only authenticated users can list books from a specific library",
-        tags=["List library books"]
+        tags=["List library books"],
     )
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
@@ -140,7 +144,7 @@ class ListLibraryEmployees(ListAPIView):
         responses={200: UserSerializer},
         description="List library employees",
         summary="Only authenticated users can list employees from a specific library",
-        tags=["List library employees"]
+        tags=["List library employees"],
     )
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
@@ -163,7 +167,7 @@ class ListLibraryLoans(ListAPIView):
         responses={200: LoanSerializer},
         description="List library loans",
         summary="Only administrators and employees can list your library's loans",
-        tags=["List library loans"]
+        tags=["List library loans"],
     )
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
@@ -186,7 +190,7 @@ class ListLibraryUsersBlocked(ListAPIView):
         responses={200: UserSerializer},
         description="Lists all users that are locked in the library",
         summary="Only adminstrators and employees can list your library's users blocked",
-        tags=["List library users blocked"]        
+        tags=["List library users blocked"],
     )
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
