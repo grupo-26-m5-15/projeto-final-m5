@@ -101,7 +101,7 @@ class BookCopyListView(ListAPIView):
 class BookLibraryCreate(CreateAPIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated, IsAdminOrEmployee]
-    queryset = LibraryBooksSerializer.objects.all()
+    queryset = LibraryBooks.objects.all()
     serializer_class = LibraryBooksSerializer
     lookup_field = "title"
 
