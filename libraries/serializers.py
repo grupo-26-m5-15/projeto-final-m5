@@ -6,21 +6,12 @@ from books.serializers import BookSerializer
 
 
 class LibrarySerializer(serializers.ModelSerializer):
-
     employees = UserSerializer(read_only=True, many=True)
     books = BookSerializer(read_only=True, many=True)
 
     class Meta:
         model = Library
-        fields = [
-            "id",
-            "name",
-            "cnpj",
-            "email",
-            "address",
-            "employees",
-            "books"
-        ]
+        fields = ["id", "name", "cnpj", "email", "address", "employees", "books"]
 
     def create(self, validated_data):
         return Library.objects.create(**validated_data)
@@ -42,8 +33,8 @@ class LibraryEmployeeSerializer(serializers.ModelSerializer):
         model = LibraryEmployee
         fields = ["id", "library", "employee", "is_employee"]
 
-    def create(self, validated_data):
-        return LibraryEmployee.objects.create(**validated_data)
+    # def create(self, validated_data):
+    #     return LibraryEmployee.objects.create(**validated_data)
 
     def update(
         self, instance: LibraryEmployee, validated_data: dict
