@@ -12,7 +12,7 @@ class UserSerializer(serializers.ModelSerializer):
             "first_name",
             "last_name",
             "email",
-            "birth_date",
+            "birthdate",
             "cpf",
             "username",
             "password",
