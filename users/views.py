@@ -79,7 +79,8 @@ class UserPostView(generics.CreateAPIView):
         parameters=[
             UserSerializer,
             OpenApiParameter("pk", OpenApiTypes.UUID, OpenApiParameter.PATH),
-            OpenApiParameter("queryparam1", OpenApiTypes.UUID, OpenApiParameter.QUERY),
+            OpenApiParameter("queryparam1", OpenApiTypes.UUID,
+                             OpenApiParameter.QUERY),
         ],
         request=UserSerializer,
         responses={201: UserSerializer},
@@ -115,7 +116,8 @@ class UserAdminView(generics.CreateAPIView):
         parameters=[
             UserAdminSerializer,
             OpenApiParameter("pk", OpenApiTypes.UUID, OpenApiParameter.PATH),
-            OpenApiParameter("queryparam1", OpenApiTypes.UUID, OpenApiParameter.QUERY),
+            OpenApiParameter("queryparam1", OpenApiTypes.UUID,
+                             OpenApiParameter.QUERY),
         ],
         request=UserAdminSerializer,
         responses={201: UserAdminSerializer},
@@ -167,7 +169,8 @@ class UserDetailsView(generics.RetrieveUpdateDestroyAPIView):
         parameters=[
             UserSerializer,
             OpenApiParameter("pk", OpenApiTypes.UUID, OpenApiParameter.PATH),
-            OpenApiParameter("queryparam1", OpenApiTypes.UUID, OpenApiParameter.QUERY),
+            OpenApiParameter("queryparam1", OpenApiTypes.UUID,
+                             OpenApiParameter.QUERY),
         ],
         request=UserSerializer,
         responses={200: UserSerializer},
@@ -194,7 +197,8 @@ class UserDetailsView(generics.RetrieveUpdateDestroyAPIView):
 
 class UserFollowingBooksListView(generics.ListAPIView):
     authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticated, IsAccountOwnerOrAdminOrEmployeeFollow]
+    permission_classes = [IsAuthenticated,
+                          IsAccountOwnerOrAdminOrEmployeeFollow]
     queryset = Following.objects.all()
     serializer_class = FollowingSerializerGet
 
@@ -212,7 +216,8 @@ class UserFollowingBooksListView(generics.ListAPIView):
         title = self.request.query_params.get("title")
         type = self.request.query_params.get("type")
         author = self.request.query_params.get("author")
-        publishing_company = self.request.query_params.get("publishing_company")
+        publishing_company = self.request.query_params.get(
+            "publishing_company")
 
         queryset = super().get_queryset()
 
@@ -244,7 +249,8 @@ class UserFollowingBooksCreateView(generics.CreateAPIView):
         parameters=[
             FollowingSerializer,
             OpenApiParameter("pk", OpenApiTypes.UUID, OpenApiParameter.PATH),
-            OpenApiParameter("queryparam1", OpenApiTypes.UUID, OpenApiParameter.QUERY),
+            OpenApiParameter("queryparam1", OpenApiTypes.UUID,
+                             OpenApiParameter.QUERY),
         ],
         request=FollowingSerializer,
         responses={201: FollowingSerializer},
@@ -333,7 +339,8 @@ class UserRatingBookCreateView(generics.CreateAPIView):
         parameters=[
             RatingSerializer,
             OpenApiParameter("pk", OpenApiTypes.UUID, OpenApiParameter.PATH),
-            OpenApiParameter("queryparam1", OpenApiTypes.UUID, OpenApiParameter.QUERY),
+            OpenApiParameter("queryparam1", OpenApiTypes.UUID,
+                             OpenApiParameter.QUERY),
         ],
         request=RatingSerializer,
         responses={201: RatingSerializer},
@@ -358,14 +365,16 @@ class UserRatingBookCreateView(generics.CreateAPIView):
             ratings_already_exists = None
 
         if ratings_already_exists:
-            raise ValidationError({"message": "The user already rated this book"})
+            raise ValidationError(
+                {"message": "The user already rated this book"})
 
         serializer.save(user=self.request.user, book=book)
 
 
 class UserRatingBooksListView(generics.ListAPIView):
     authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticated, IsAccountOwnerOrAdminOrEmployeeFollow]
+    permission_classes = [IsAuthenticated,
+                          IsAccountOwnerOrAdminOrEmployeeFollow]
     queryset = Rating.objects.all()
     serializer_class = RatingSerializerGet
 
@@ -383,7 +392,8 @@ class UserRatingBooksListView(generics.ListAPIView):
         title = self.request.query_params.get("title")
         type = self.request.query_params.get("type")
         author = self.request.query_params.get("author")
-        publishing_company = self.request.query_params.get("publishing_company")
+        publishing_company = self.request.query_params.get(
+            "publishing_company")
 
         queryset = super().get_queryset()
 
@@ -463,7 +473,8 @@ class HireALibrarianView(generics.CreateAPIView):
         parameters=[
             LibraryEmployeeSerializer,
             OpenApiParameter("pk", OpenApiTypes.UUID, OpenApiParameter.PATH),
-            OpenApiParameter("queryparam1", OpenApiTypes.UUID, OpenApiParameter.QUERY),
+            OpenApiParameter("queryparam1", OpenApiTypes.UUID,
+                             OpenApiParameter.QUERY),
         ],
         request=LibraryEmployeeSerializer,
         responses={201: LibraryEmployeeSerializer},
@@ -497,7 +508,8 @@ class HireALibrarianView(generics.CreateAPIView):
             user_already_hired = None
 
         if user_already_hired and user_already_hired.is_employee:
-            raise ValidationError({"message": "This user is already an employee"})
+            raise ValidationError(
+                {"message": "This user is already an employee"})
 
         serializer.save(employee=user, library=library)
 
@@ -551,7 +563,8 @@ class RetrieveOrFireEmployeeView(generics.RetrieveUpdateAPIView):
         instance = self.get_object()
         instance.is_employee = False
         instance.save()
-        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer = self.get_serializer(
+            instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
         return Response(
@@ -565,7 +578,8 @@ class RetrieveOrFireEmployeeView(generics.RetrieveUpdateAPIView):
 
 class ListAllUserLibraryBlocksView(generics.ListAPIView):
     authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticated, IsAccountOwnerOrAdminOrEmployeeFollow]
+    permission_classes = [IsAuthenticated,
+                          IsAccountOwnerOrAdminOrEmployeeFollow]
     queryset = UserLibraryBlock.objects.all()
     serializer_class = UserLibraryBlockListSerializer
     lookup_field = "cpf"
@@ -631,7 +645,8 @@ class UnblockStudentView(generics.UpdateAPIView):
         instance = self.get_object()
         instance.is_blocked = False
         instance.save()
-        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer = self.get_serializer(
+            instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
         return Response(
@@ -645,7 +660,8 @@ class UnblockStudentView(generics.UpdateAPIView):
 
 class ListLoanUserViews(generics.ListAPIView):
     authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticated, IsAccountOwnerOrAdminOrEmployeeFollow]
+    permission_classes = [IsAuthenticated,
+                          IsAccountOwnerOrAdminOrEmployeeFollow]
     queryset = Loan.objects.all()
     serializer_class = ListLoanUserSerializer
     lookup_field = "cpf"
